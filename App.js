@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Image, ScrollView, Button, Alert, TouchableHighlight,  } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     paddingTop: 20,
     paddingBottom: 10,
-    flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+  },
+  list: {
   },
   gif: {
-    width: 150,
-    height: 150
+    width: 100,
+    height: 100
+  },
+  mainGif: {
+    width: 200,
+    height: 200
+  },
+  input: {
+    height: 50
   }
 });
 
@@ -22,12 +28,11 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      gifIds: [],
+      gifIds: ['xT9IgDEI1iZyb2wqo8', 'xT9IgDEI1iZyb2wqo8'],
       selectedGif: 'xT9IgDEI1iZyb2wqo8'
     };
   }
-  searchGif = (term) => {
-    const word = term.target.value;
+  searchGif = (word) => {
     giphy.search(word, (err, res) => {
       this.setState({ gifIds: res.data.slice(0, 10).map(gif => gif.id) });
     });
@@ -38,22 +43,56 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Gif giphyId={this.state.selectedGif}/>
+        <Gif giphyId={this.state.selectedGif} style={styles.mainGif} />
+        <SearchBar handleChange={this.searchGif} />
+        <ScrollView>
+          <GifList style={styles.list} gifIds={this.state.gifIds} handleSelectedGif={this.handleSelectedGif} />
+        </ScrollView>
+        <Button
+          onPress={() => {
+            Alert.alert('You tapped the button!');
+          }}
+          title="Press Me"
+        />
       </View>
     );
   }
 }
 
 class Gif extends Component {
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   return this.props.giphyId !== nextProps.giphyId;
-  // }
   render() {
     const gif = {
       uri: `https://media.giphy.com/media/${this.props.giphyId}/giphy.gif`
     };
     return (
-      <Image source={gif} style={styles.gif} />
+      <TouchableHighlight 
+          onPress={() => {
+            this.props.handleSelectedGif(this.props.giphyId);
+          }}>
+        <Image source={gif} style={styles.gif} />
+      </TouchableHighlight>
+    );
+  }
+}
+
+const GifList = (props) => {
+  return (
+    <View>
+      {
+        props.gifIds.map(id => <Gif key={id} giphyId={id} handleSelectedGif={props.handleSelectedGif} />)
+      }
+    </View>
+  );
+};
+
+class SearchBar extends Component {
+  render() {
+    return (
+      <TextInput
+        style={styles.input}
+        placeholder="Search a gif"
+        onChangeText={text => this.props.handleChange(text)}
+      />
     );
   }
 }

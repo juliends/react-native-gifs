@@ -26,6 +26,7 @@
   "dependencies": {
     "babel-eslint": "^8.1.2",
     "expo": "^23.0.4",
+    "giphy-api": "^1.2.7",
     "react": "16.0.0",
     "react-native": "0.50.3"
   }
